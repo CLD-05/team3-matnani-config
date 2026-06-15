@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: team3-matnani-project
+  namespace: argocd
+spec:
+  description: "team3 Matnani GitOps Project"
+  sourceRepos:
+    - 'https://github.com/CLD-05/team3-matnani-config.git'
+  destinations:
+    - namespace: team3-matnani-dev
+      server: https://kubernetes.default.svc
+    - namespace: team3-matnani-prod
+      server: https://kubernetes.default.svc
+    - namespace: monitoring
+      server: https://kubernetes.default.svc
+
+  # 프로젝트 내에서 생성 허용할 쿠버네티스 리소스 범위 제한
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace

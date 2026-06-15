@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: team3-matnani-app-dev
+  namespace: argocd
+spec:
+  project: team3-matnani-project
+  source:
+    repoURL: 'https://github.com/CLD-05/team3-matnani-config.git'
+    targetRevision: main
+    path: apps/team3-matnani/overlays/dev
+
+  destination:  # 배포 대상
+    server: 'https://kubernetes.default.svc'
+    namespace: team3-matnani-dev
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+    syncOptions:
+      - CreateNamespace=true
