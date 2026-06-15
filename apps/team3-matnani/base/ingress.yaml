@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: team3-matnani-ingress # ingress 기준 네임
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: team3-matnani-service # base/service.yaml에 적힌 앱 서비스 이름과 똑같아야 합니다!
+                port:
+                  number: 8080
