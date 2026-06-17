@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matnani-api
+  labels:
+    app: matnani-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: matnani-api
+  template:
+    metadata:
+      labels:
+        app: matnani-api
+    spec:
+      containers:
+        - name: matnani-api
+          image: team3-matnani-api:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: matnani-app-secret
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: dev
+            - name: SPRING_DATA_REDIS_PORT
+              value: "6379"
+            - name: CLOUD_AWS_REGION
+              value: ap-northeast-2
+            - name: CLOUD_AWS_S3_CDN_URL
+              value: https://team3-matnani-dev-images.s3.ap-northeast-2.amazonaws.com
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 5
