@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matnani-api
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: matnani-api
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+            - name: CLOUD_AWS_S3_CDN_URL
+              value: https://team3-matnani-prod-images.s3.ap-northeast-2.amazonaws.com
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
