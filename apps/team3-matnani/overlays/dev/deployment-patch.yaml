@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matnani-api
+spec:
+  template:
+    spec:
+      containers:
+        - name: matnani-api
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: dev
+            - name: CLOUD_AWS_S3_CDN_URL
+              value: https://team3-matnani-dev-images.s3.ap-northeast-2.amazonaws.com
