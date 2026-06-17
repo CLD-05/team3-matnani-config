@@ -1,0 +1,15 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: matnani-api
+spec:
+  scaleTargetRef:
+    name: matnani-api
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  cooldownPeriod: 300
+  triggers:
+    - type: cpu
+      metadata:
+        type: Utilization
+        value: "70"
