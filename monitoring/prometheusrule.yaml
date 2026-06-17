@@ -1,0 +1,52 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: matnani-alerts
+  namespace: monitoring
+  labels:
+    release: team3-matnani-kube-prometheus-stack
+spec:
+  groups:
+    - name: matnani.api
+      rules:
+        - alert: HighErrorRate
+          expr: |
+            rate(http_server_requests_seconds_count{status=~"5..",job="matnani-api"}[5m]) > 0.01
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "높은 에러율 감지"
+            description: "5xx 에러율이 1%를 초과했습니다. (현재: {{ $value | humanizePercentage }})"
+
+        - alert: HighLatency
+          expr: |
+            histogram_quantile(0.99,
+              rate(http_server_requests_seconds_bucket{job="matnani-api"}[5m])
+            ) > 0.5
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "응답 지연 감지"
+            description: "p99 응답 시간이 500ms를 초과했습니다. (현재: {{ $value | humanizeDuration }})"
+
+        - alert: PodDown
+          expr: up{job="matnani-api"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "API 파드 다운"
+            description: "matnani-api 파드가 응답하지 않습니다."
+
+        - alert: HighMemoryUsage
+          expr: |
+            container_memory_working_set_bytes{namespace="team3-matnani-dev", container="matnani-api"}
+            / container_spec_memory_limit_bytes{namespace="team3-matnani-dev", container="matnani-api"} > 0.85
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "메모리 사용률 높음"
+            description: "메모리 사용률이 85%를 초과했습니다. (현재: {{ $value | humanizePercentage }})"
