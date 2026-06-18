@@ -25,6 +25,8 @@ spec:
             - secretRef:
                 name: matnani-app-secret
           env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
             - name: SPRING_DATA_REDIS_PORT
               value: "6379"
             - name: CLOUD_AWS_REGION
