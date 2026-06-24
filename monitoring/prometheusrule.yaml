@@ -44,7 +44,7 @@ spec:
           expr: |
             container_memory_working_set_bytes{namespace="team3-matnani-dev", container="matnani-api"}
             / container_spec_memory_limit_bytes{namespace="team3-matnani-dev", container="matnani-api"} > 0.85
-          for: 5m
+          for: 1m
           labels:
             severity: warning
           annotations:
