@@ -10,7 +10,7 @@ namespace: team3-matnani-dev
 images:
 - name: team3-matnani-api
   newName: 495599735720.dkr.ecr.ap-northeast-2.amazonaws.com/team3-matnani-dev-api
-  newTag: 8ef9d27
+  newTag: 3e9065f
 
 patches:
 - path: ingress-patch.yaml
