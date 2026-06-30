@@ -7,7 +7,7 @@ metadata:
 spec:
   refreshInterval: 1h             # 1시간마다 AWS에서 새로운 값 가져오기
   secretStoreRef:
-    name: team3-matnani-secret-store
+    name: aws-parameter-store
     kind: ClusterSecretStore      # 클러스터 전체에서 사용 가능
   target:
     name: slack-webhook-secret    # 생성될 K8s Secret 이름

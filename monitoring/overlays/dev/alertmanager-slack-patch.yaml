@@ -5,7 +5,7 @@ metadata:
   namespace: monitoring
 spec:
   secretStoreRef:
-    name: team3-matnani-dev-secret-store
+    name: aws-parameter-store
     kind: ClusterSecretStore
   data:
     - secretKey: webhook-url
