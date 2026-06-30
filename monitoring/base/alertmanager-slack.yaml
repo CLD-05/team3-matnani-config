@@ -2,23 +2,37 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: slack-webhook             # 이 리소스 이름
+  name: slack-webhook-dev
   namespace: monitoring
 spec:
-  refreshInterval: 1h             # 1시간마다 AWS에서 새로운 값 가져오기
+  refreshInterval: 1h
   secretStoreRef:
     name: aws-parameter-store
-    kind: ClusterSecretStore      # 클러스터 전체에서 사용 가능
+    kind: ClusterSecretStore
   target:
-    name: slack-webhook-secret    # 생성될 K8s Secret 이름
-
-  # SSM에서 가져올 경로 (overlay에서 환경별로 패치)
+    name: slack-webhook-dev-secret
   data:
     - secretKey: webhook-url
       remoteRef:
-        key: /team3/matnani/monitoring/slack-webhook
+        key: /team3/matnani/dev/monitoring/slack-webhook
 ---
-# Slack 알람 설정
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: slack-webhook-prod
+  namespace: monitoring
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-parameter-store
+    kind: ClusterSecretStore
+  target:
+    name: slack-webhook-prod-secret
+  data:
+    - secretKey: webhook-url
+      remoteRef:
+        key: /team3/matnani/prod/monitoring/slack-webhook
+---
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
 metadata:
@@ -28,18 +42,36 @@ metadata:
     alertmanagerConfig: slack
 spec:
   route:
-    receiver: slack-notifications           # 받는 사람: slack-notifications
-    groupBy: [ 'alertname', 'severity' ]
+    receiver: slack-dev
+    groupBy: ['alertname', 'severity', 'namespace']
     groupWait: 30s
     groupInterval: 5m
     repeatInterval: 12h
+    routes:
+      - receiver: slack-dev
+        matchers:
+          - name: namespace
+            value: team3-matnani-dev
+      - receiver: slack-prod
+        matchers:
+          - name: namespace
+            value: team3-matnani-prod
   receivers:
-    - name: slack-notifications
+    - name: slack-dev
       slackConfigs:
         - apiURL:
-            name: slack-webhook-secret        # 위에서 만든 Secret 참조
+            name: slack-webhook-dev-secret
             key: webhook-url
-          channel: '#team3-matnani-dev-alerts'    # 전송할 Slack 채널 (overlay에서 환경별로 패치)
+          channel: '#team3-matnani-dev-alerts'
+          sendResolved: true
+          title: '[{{ .Status | toUpper }}] {{ .CommonAnnotations.summary }}'
+          text: '{{ .CommonAnnotations.description }}'
+    - name: slack-prod
+      slackConfigs:
+        - apiURL:
+            name: slack-webhook-prod-secret
+            key: webhook-url
+          channel: '#team3-matnani-prod-alerts'
           sendResolved: true
           title: '[{{ .Status | toUpper }}] {{ .CommonAnnotations.summary }}'
           text: '{{ .CommonAnnotations.description }}'

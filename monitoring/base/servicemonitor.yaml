@@ -8,7 +8,8 @@ metadata:
 spec:
   namespaceSelector:
     matchNames:
-      - team3-matnani-app
+      - team3-matnani-dev
+      - team3-matnani-prod
   selector:
     matchLabels:
       app: matnani-api
