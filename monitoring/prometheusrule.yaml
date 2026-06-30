@@ -42,8 +42,8 @@ spec:
 
         - alert: HighMemoryUsage
           expr: |
-            container_memory_working_set_bytes{namespace="team3-matnani-dev", container="matnani-api"}
-            / container_spec_memory_limit_bytes{namespace="team3-matnani-dev", container="matnani-api"} > 0.85
+            container_memory_working_set_bytes{container="matnani-api"}
+            / container_spec_memory_limit_bytes{container="matnani-api"} > 0.85
           for: 5m
           labels:
             severity: warning
