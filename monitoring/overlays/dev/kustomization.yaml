@@ -5,15 +5,9 @@ resources:
   - ../../base
 
 patches:
-  - path: externalsecret-patch.yaml
-    target:
-      kind: ExternalSecret
-      name: slack-webhook
-  - path: alertmanagerconfig-patch.yaml
-    target:
-      kind: AlertmanagerConfig
-      name: slack-config
   - path: servicemonitor-patch.yaml
     target:
       kind: ServiceMonitor
       name: matnani-api
+
+# AlertmanagerConfig와 Slack ExternalSecret은 Terraform에서 환경별로 관리합니다.
