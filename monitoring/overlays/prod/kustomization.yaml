@@ -2,14 +2,14 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ../../
+  - ../../base
 
 patches:
-  - path: alertmanager-slack-patch.yaml
+  - path: externalsecret-patch.yaml
     target:
       kind: ExternalSecret
       name: slack-webhook
-  - path: alertmanager-slack-patch.yaml
+  - path: alertmanagerconfig-patch.yaml
     target:
       kind: AlertmanagerConfig
       name: slack-config
