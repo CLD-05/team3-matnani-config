@@ -14,14 +14,6 @@ spec:
     server: 'https://kubernetes.default.svc'
     namespace: team3-matnani-dev
 
-  ignoreDifferences:
-    - group: apps
-      kind: Deployment
-      name: matnani-api
-      namespace: team3-matnani-dev
-      jsonPointers:
-        - /spec/replicas
-
   syncPolicy:
     automated:
       prune: true
@@ -29,4 +21,3 @@ spec:
 
     syncOptions:
       - CreateNamespace=true
-      - RespectIgnoreDifferences=true

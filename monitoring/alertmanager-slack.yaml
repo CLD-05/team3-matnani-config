@@ -2,20 +2,23 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: slack-webhook
+  name: slack-webhook             # 이 리소스 이름
   namespace: monitoring
 spec:
-  refreshInterval: 1h
+  refreshInterval: 1h             # 1시간마다 AWS에서 새로운 값 가져오기
   secretStoreRef:
-    name: team3-matnani-dev-secret-store
-    kind: ClusterSecretStore
+    name: team3-matnani-secret-store
+    kind: ClusterSecretStore      # 클러스터 전체에서 사용 가능
   target:
-    name: slack-webhook-secret
+    name: slack-webhook-secret    # 생성될 K8s Secret 이름
+
+  # SSM에서 가져올 경로 (overlay에서 환경별로 패치)
   data:
     - secretKey: webhook-url
       remoteRef:
-        key: /team3/matnani/dev/monitoring/slack-webhook
+        key: /team3/matnani/monitoring/slack-webhook
 ---
+# Slack 알람 설정
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
 metadata:
@@ -25,8 +28,8 @@ metadata:
     alertmanagerConfig: slack
 spec:
   route:
-    receiver: slack-notifications
-    groupBy: ['alertname', 'severity']
+    receiver: slack-notifications           # 받는 사람: slack-notifications
+    groupBy: [ 'alertname', 'severity' ]
     groupWait: 30s
     groupInterval: 5m
     repeatInterval: 12h
@@ -34,9 +37,9 @@ spec:
     - name: slack-notifications
       slackConfigs:
         - apiURL:
-            name: slack-webhook-secret
+            name: slack-webhook-secret        # 위에서 만든 Secret 참조
             key: webhook-url
-          channel: '#team3-matnani-alerts'
+          channel: '#team3-matnani-dev-alerts'    # 전송할 Slack 채널 (overlay에서 환경별로 패치)
           sendResolved: true
           title: '[{{ .Status | toUpper }}] {{ .CommonAnnotations.summary }}'
           text: '{{ .CommonAnnotations.description }}'

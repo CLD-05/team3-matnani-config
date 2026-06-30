@@ -1,0 +1,27 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: slack-webhook
+  namespace: monitoring
+spec:
+  secretStoreRef:
+    name: team3-matnani-prod-secret-store
+    kind: ClusterSecretStore
+  data:
+    - secretKey: webhook-url
+      remoteRef:
+        key: /team3/matnani/prod/monitoring/slack-webhook
+---
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: slack-config
+  namespace: monitoring
+spec:
+  receivers:
+    - name: slack-notifications
+      slackConfigs:
+        - apiURL:
+            name: slack-webhook-secret
+            key: webhook-url
+          channel: '#team3-matnani-prod-alerts'
