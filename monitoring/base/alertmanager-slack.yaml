@@ -1,8 +1,7 @@
----
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: slack-webhook-dev
+  name: slack-webhook
   namespace: monitoring
 spec:
   refreshInterval: 1h
@@ -10,28 +9,11 @@ spec:
     name: aws-parameter-store
     kind: ClusterSecretStore
   target:
-    name: slack-webhook-dev-secret
+    name: slack-webhook-secret
   data:
     - secretKey: webhook-url
       remoteRef:
         key: /team3/matnani/dev/monitoring/slack-webhook
----
-apiVersion: external-secrets.io/v1beta1
-kind: ExternalSecret
-metadata:
-  name: slack-webhook-prod
-  namespace: monitoring
-spec:
-  refreshInterval: 1h
-  secretStoreRef:
-    name: aws-parameter-store
-    kind: ClusterSecretStore
-  target:
-    name: slack-webhook-prod-secret
-  data:
-    - secretKey: webhook-url
-      remoteRef:
-        key: /team3/matnani/prod/monitoring/slack-webhook
 ---
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
@@ -39,39 +21,21 @@ metadata:
   name: slack-config
   namespace: monitoring
   labels:
-    alertmanagerConfig: slack
+    alertmanagerConfig: team3-matnani
 spec:
   route:
-    receiver: slack-dev
-    groupBy: ['alertname', 'severity', 'namespace']
+    receiver: slack-notifications
+    groupBy: ['alertname', 'severity']
     groupWait: 30s
     groupInterval: 5m
     repeatInterval: 12h
-    routes:
-      - receiver: slack-dev
-        matchers:
-          - name: namespace
-            value: team3-matnani-dev
-      - receiver: slack-prod
-        matchers:
-          - name: namespace
-            value: team3-matnani-prod
   receivers:
-    - name: slack-dev
+    - name: slack-notifications
       slackConfigs:
         - apiURL:
-            name: slack-webhook-dev-secret
+            name: slack-webhook-secret
             key: webhook-url
-          channel: '#team3-matnani-dev-alerts'
-          sendResolved: true
-          title: '[{{ .Status | toUpper }}] {{ .CommonAnnotations.summary }}'
-          text: '{{ .CommonAnnotations.description }}'
-    - name: slack-prod
-      slackConfigs:
-        - apiURL:
-            name: slack-webhook-prod-secret
-            key: webhook-url
-          channel: '#team3-matnani-prod-alerts'
+          channel: '#team3-matnani-alerts'
           sendResolved: true
           title: '[{{ .Status | toUpper }}] {{ .CommonAnnotations.summary }}'
           text: '{{ .CommonAnnotations.description }}'

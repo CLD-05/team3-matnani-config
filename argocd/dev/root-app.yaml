@@ -1,20 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: team3-matnani-monitoring
+  name: team3-matnani-root-dev
   namespace: argocd
 spec:
-  project: team3-matnani-project
+  project: default
   source:
     repoURL: 'https://github.com/CLD-05/team3-matnani-config.git'
     targetRevision: main
-    path: monitoring/base
+    path: argocd/dev
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: monitoring
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
