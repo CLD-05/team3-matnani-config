@@ -238,7 +238,6 @@ Prod image 변경은 반드시 PR diff와 배포 대상 SHA를 검토한 후 병
 
 ## 📊 모니터링
 
----
 
 ### 소유권
 
@@ -249,13 +248,12 @@ Prod image 변경은 반드시 PR diff와 배포 대상 SHA를 검토한 후 병
 
 동일한 `ExternalSecret` 또는 `AlertmanagerConfig`를 Terraform과 Config Repository 양쪽에 만들면 Slack 중복 알림과 ArgoCD drift가 발생합니다. 리소스를 이동할 때는 기존 Terraform state와 클러스터의 레거시 리소스까지 정리합니다.
 
----
 
 ### 애플리케이션 메트릭
 
 ServiceMonitor는 환경별 API namespace의 `app=matnani-api` Service를 선택하고, 15초마다 `/actuator/prometheus`를 수집합니다.
 
----
+
 
 ### 알람 규칙
 
