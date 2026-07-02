@@ -1,10 +1,24 @@
-# Matnani Kubernetes Config
+# 🥐 🥨 맛난이 Kubernetes Config 레포지토리
 
 동네 기반 못난이 식품 거래 서비스 **맛난이(Matnani)** 의 Kubernetes 매니페스트와 ArgoCD GitOps 설정 저장소입니다.
 
 공통 리소스는 Kustomize `base`에서 관리하고 Dev/Prod 차이는 `overlays`에서 패치합니다. ArgoCD는 환경별 App of Apps 구조로 애플리케이션과 모니터링 리소스를 지속적으로 동기화합니다.
 
-## GitOps Flow
+<hr style="border: 2px solid #000;">
+
+## 🔗 관련 레포지토리
+
+| 레포지토리 | 설명 |
+|-----------|------|
+| [team3-matnani-app](https://github.com/CLD-05/team3-matnani-app) | 프론트엔드 + 백엔드 소스 코드 |
+| [team3-matnani-config](https://github.com/CLD-05/team3-matnani-config) | Kubernetes 매니페스트 (ArgoCD GitOps) |
+| [team3-matnani-infra](https://github.com/CLD-05/team3-matnani-infra) | AWS 인프라 (Terraform) |
+
+<br>
+
+<hr style="border: 2px solid #000;">
+
+## 🔄 GitOps 흐름
 
 ```mermaid
 flowchart LR
@@ -19,7 +33,11 @@ flowchart LR
     Monitoring --> EKS
 ```
 
-## Design Principles
+<br>
+
+<hr style="border: 2px solid #000;">
+
+## 📐 설계 원칙
 
 - 공통 Kubernetes 리소스는 `base`, 환경별 차이는 `overlays/dev`, `overlays/prod`에서 관리합니다.
 - Dev와 Prod는 서로 다른 EKS 클러스터와 namespace에 배포합니다.
@@ -29,7 +47,11 @@ flowchart LR
 - Terraform과 ArgoCD가 같은 Kubernetes 리소스를 동시에 관리하지 않도록 소유권을 분리합니다.
 - HPA/KEDA가 조정하는 Deployment replicas는 ArgoCD가 되돌리지 않도록 차이를 무시합니다.
 
-## Tech Stack
+<br>
+
+<hr style="border: 2px solid #000;">
+
+## ⛏️ 기술 스택
 
 | 영역 | 기술 |
 | --- | --- |
@@ -41,21 +63,25 @@ flowchart LR
 | Autoscaling | KEDA, HPA, Cluster Autoscaler |
 | Monitoring | Prometheus Operator, ServiceMonitor, PrometheusRule, AlertmanagerConfig |
 
-## Repository Structure
+<br>
+
+<hr style="border: 2px solid #000;">
+
+## 📁 레포지토리 구조
 
 ```text
 team3-matnani-config/
 ├── apps/team3-matnani/
 │   ├── base/
-│   │   ├── deployment.yaml          # API Deployment, probes, resources
-│   │   ├── service.yaml             # ClusterIP Service
-│   │   ├── ingress.yaml             # 공통 ALB Ingress
-│   │   ├── serviceaccount.yaml      # 애플리케이션 ServiceAccount
-│   │   ├── keda-scaledobject.yaml   # CPU 기반 Pod autoscaling
+│   │   ├── deployment.yaml         
+│   │   ├── service.yaml            
+│   │   ├── ingress.yaml            
+│   │   ├── serviceaccount.yaml     
+│   │   ├── keda-scaledobject.yaml  
 │   │   └── kustomization.yaml
 │   └── overlays/
-│       ├── dev/                     # Dev image, namespace, env, SSM 경로
-│       └── prod/                    # Prod image, namespace, env, SSM 경로
+│       ├── dev/                    
+│       └── prod/                   
 ├── argocd/
 │   ├── dev/
 │   │   ├── root-app.yaml
@@ -70,14 +96,17 @@ team3-matnani-config/
 │       ├── application-monitoring.yaml
 │       └── argocd-ingress.yaml
 ├── monitoring/
-│   ├── base/                        # 공통 수집, 알람, Slack 리소스
+│   ├── base/                      
 │   └── overlays/
-│       ├── dev/                     # Dev namespace와 Slack 설정
-│       └── prod/                    # Prod namespace와 Slack 설정
+│       ├── dev/                   
+│       └── prod/                  
 └── README.md
 ```
 
-## Environment
+<br>
+<hr style="border: 2px solid #000;">
+
+## 🌿 환경 구성 (Dev / Prod)
 
 | 항목 | Dev | Prod |
 | --- | --- | --- |
@@ -93,7 +122,10 @@ team3-matnani-config/
 
 실제 image tag와 endpoint 값의 최종 기준은 각 환경의 `kustomization.yaml`과 patch 파일입니다.
 
-## Application Manifests
+<br>
+<hr style="border: 2px solid #000;">
+
+## 📦 애플리케이션 매니페스트
 
 ### Deployment
 
@@ -123,7 +155,9 @@ Prod ArgoCD Application은 Deployment의 `/spec/replicas`를 `ignoreDifferences`
 - `/actuator/health`를 ALB health check endpoint로 사용합니다.
 - Dev/Prod overlay가 환경별 ALB 이름을 지정합니다.
 
-## Secret Flow
+<hr style="border: 2px solid #000;">
+
+## 🔐 시크릿 흐름
 
 ```mermaid
 flowchart LR
@@ -149,7 +183,11 @@ CLOUD_AWS_S3_BUCKET
 
 SSM parameter의 값은 Git이나 ArgoCD 화면에 기록하지 않습니다.
 
-## ArgoCD App Of Apps
+<br>
+
+<hr style="border: 2px solid #000;">
+
+## 🚀 ArgoCD App of Apps
 
 Dev와 Prod는 각각 자신의 EKS 클러스터에서 별도 root application을 실행합니다.
 
@@ -163,7 +201,7 @@ team3-matnani-root-{env}
 
 클러스터 최초 구성 시 root application만 한 번 수동 적용합니다.
 
-```powershell
+```bash
 # Dev
 kubectl --context matnani-dev apply -f argocd/dev/root-app.yaml
 
@@ -173,7 +211,11 @@ kubectl --context matnani-prod apply -f argocd/prod/root-app.yaml
 
 이후 `main` 변경은 ArgoCD가 자동 감지하며, 삭제된 리소스는 `prune`, 수동 변경은 `selfHeal`로 Git 상태에 맞춥니다.
 
-## Image Update Workflow
+
+<br>
+<hr style="border: 2px solid #000;">
+
+## 🖼️ 이미지 업데이트 흐름
 
 백엔드 CI가 새 image를 ECR에 push한 뒤 환경 overlay의 `newTag`를 변경합니다.
 
@@ -192,7 +234,13 @@ images:
 
 Prod image 변경은 반드시 PR diff와 배포 대상 SHA를 검토한 후 병합합니다.
 
-## Monitoring Ownership
+<hr style="border: 2px solid #000;">
+
+## 📊 모니터링
+
+---
+
+### 소유권
 
 | 소유자 | 관리 대상 |
 | --- | --- |
@@ -201,11 +249,15 @@ Prod image 변경은 반드시 PR diff와 배포 대상 SHA를 검토한 후 병
 
 동일한 `ExternalSecret` 또는 `AlertmanagerConfig`를 Terraform과 Config Repository 양쪽에 만들면 Slack 중복 알림과 ArgoCD drift가 발생합니다. 리소스를 이동할 때는 기존 Terraform state와 클러스터의 레거시 리소스까지 정리합니다.
 
-### Application Metrics
+---
+
+### 애플리케이션 메트릭
 
 ServiceMonitor는 환경별 API namespace의 `app=matnani-api` Service를 선택하고, 15초마다 `/actuator/prometheus`를 수집합니다.
 
-### Alert Rules
+---
+
+### 알람 규칙
 
 | Alert | 조건 | 대기 시간 |
 | --- | --- | --- |
@@ -216,102 +268,22 @@ ServiceMonitor는 환경별 API namespace의 `app=matnani-api` Service를 선택
 
 Alertmanager는 환경별 SSM Slack Webhook과 채널을 사용하며 firing/resolved 알림을 전송합니다.
 
-## Local Validation
+<br>
+<hr style="border: 2px solid #000;">
 
-PR 전에 Dev/Prod rendering 결과를 모두 확인합니다.
+## 🌿 브랜치 전략
 
-```powershell
-kubectl kustomize apps/team3-matnani/overlays/dev
-kubectl kustomize apps/team3-matnani/overlays/prod
-kubectl kustomize monitoring/overlays/dev
-kubectl kustomize monitoring/overlays/prod
-```
+| 브랜치 | 설명 |
+|--------|------|
+| `main` | 프로덕션 배포 기준 브랜치. PR을 통해서만 병합 가능 |
+| `feature/{이름}/{기능}` | 매니페스트 변경 브랜치 (예: `feature/yueun/argocd`) |
+| `fix/{이름}/{기능}` | 버그 수정 브랜치 (예: `fix/yueun/argocd-fix`) |
+| `ci/bump-{env}-{sha}` | CI가 자동 생성하는 image tag 업데이트 브랜치 |
 
-클러스터 CRD가 준비된 환경에서는 server-side dry run으로 API 호환성도 확인합니다.
+<hr style="border: 2px solid #000;">
 
-```powershell
-kubectl --context matnani-dev apply --dry-run=server -k apps/team3-matnani/overlays/dev
-kubectl --context matnani-dev apply --dry-run=server -k monitoring/overlays/dev
-
-kubectl --context matnani-prod apply --dry-run=server -k apps/team3-matnani/overlays/prod
-kubectl --context matnani-prod apply --dry-run=server -k monitoring/overlays/prod
-```
-
-## Deployment Verification
-
-### ArgoCD
-
-```powershell
-kubectl --context matnani-dev get applications -n argocd
-kubectl --context matnani-prod get applications -n argocd
-```
-
-모든 Application이 `Synced`와 `Healthy`인지 확인합니다.
-
-### Application
-
-```powershell
-kubectl --context matnani-prod get deploy,pod,svc,ingress -n team3-matnani-prod
-kubectl --context matnani-prod rollout status deploy/matnani-api -n team3-matnani-prod
-kubectl --context matnani-prod get pods -n team3-matnani-prod -o custom-columns="NAME:.metadata.name,IMAGE:.spec.containers[0].image,READY:.status.containerStatuses[0].ready"
-```
-
-### Secrets
-
-```powershell
-kubectl --context matnani-prod get clustersecretstore aws-parameter-store
-kubectl --context matnani-prod get externalsecret -A
-kubectl --context matnani-prod get externalsecret matnani-app-secret -n team3-matnani-prod
-```
-
-Secret의 실제 값은 출력하지 않고 `READY=True`와 동기화 상태만 확인합니다.
-
-### Monitoring
-
-```powershell
-kubectl --context matnani-prod get servicemonitor,prometheusrule,alertmanagerconfig -n monitoring
-kubectl --context matnani-prod get externalsecret slack-webhook -n monitoring
-kubectl --context matnani-prod get pods -n monitoring
-```
-
-## Rollback
-
-가장 최근의 정상 image SHA로 overlay의 `newTag`를 되돌리는 PR을 생성합니다. ArgoCD가 병합된 변경을 sync하면 Kubernetes가 이전 image로 rollout합니다.
-
-긴급 상황에서도 클러스터에서 Deployment image를 직접 수정한 상태로 끝내지 않습니다. 임시 조치 후 반드시 Config Repository에 동일 변경을 반영하거나 Git 기준 상태로 복구합니다.
-
-## Troubleshooting
-
-### Application Is OutOfSync
-
-1. ArgoCD Application의 diff를 확인합니다.
-2. KEDA/HPA가 관리하는 `/spec/replicas` 차이인지 확인합니다.
-3. Git에 없는 수동 리소스인지 확인합니다.
-4. 의도한 변경이면 Config Repository를 수정하고, 아니면 ArgoCD sync/self-heal로 복구합니다.
-
-### ExternalSecret Is Not Ready
-
-1. `ClusterSecretStore`의 `READY` 상태를 확인합니다.
-2. ExternalSecret의 SSM 경로가 현재 환경과 일치하는지 확인합니다.
-3. ESO ServiceAccount의 IRSA Role과 SSM 권한 범위를 확인합니다.
-4. `describe externalsecret`의 event를 확인하되 Secret 값은 출력하지 않습니다.
-
-### Alert Is Sent Twice
-
-1. `kubectl get alertmanagerconfig,externalsecret -n monitoring`으로 중복 리소스를 확인합니다.
-2. ArgoCD가 관리하는 `slack-config`와 `slack-webhook`을 기준으로 유지합니다.
-3. Terraform state에 남은 레거시 리소스는 Infra Repository의 plan/apply로 제거합니다.
-4. 테스트 알람을 다시 보내 한 건만 수신되는지 확인합니다.
-
-## Security Rules
+## ❕ 보안 주의사항
 
 - Kubernetes Secret 원문, SSM 값, Slack Webhook, DB 비밀번호를 커밋하지 않습니다.
 - `kubectl get secret -o yaml` 또는 base64 decode 결과를 문서와 CI 로그에 남기지 않습니다.
-- 환경별 SSM 경로와 namespace를 혼용하지 않습니다.
-- Prod image tag, CORS origin, Ingress 변경은 리뷰 후 병합합니다.
-- 클러스터에 직접 적용한 변경을 장기 상태로 남기지 않고 Git에 반영합니다.
-
-## Related Repositories
-
-- Application: [`CLD-05/team3-matnani-app`](https://github.com/CLD-05/team3-matnani-app)
-- Infrastructure: [`CLD-05/team3-matnani-infra`](https://github.com/CLD-05/team3-matnani-infra)
+- Prod image tag, CORS origin, Ingress 변경은 리뷰 후 수동 병합합니다.
