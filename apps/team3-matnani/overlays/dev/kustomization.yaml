@@ -21,3 +21,7 @@ patches:
   target:
     kind: Deployment
     name: matnani-api
+- path: serviceaccount-patch.yaml
+  target:
+    kind: ServiceAccount
+    name: matnani-api
