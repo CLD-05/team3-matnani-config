@@ -1,4 +1,4 @@
-# 🥐 🥨 맛난이 Kubernetes Config 레포지토리
+# 🥐 🥨 맛난이 프로젝트 Config 레포지토리
 
 동네 기반 못난이 식품 거래 서비스 **맛난이(Matnani)** 의 Kubernetes 매니페스트와 ArgoCD GitOps 설정 저장소입니다.
 
@@ -120,7 +120,6 @@ team3-matnani-config/
 | Monitoring Target | Dev API namespace | Prod API namespace |
 | Slack Channel | Dev alerts | Prod alerts |
 
-실제 image tag와 endpoint 값의 최종 기준은 각 환경의 `kustomization.yaml`과 patch 파일입니다.
 
 <br>
 <hr style="border: 2px solid #000;">
